@@ -1,18 +1,36 @@
-import React from 'react';
-import MyComponent from "../src/MyComponent"
+import React, { Component, lazy, Suspense } from 'react';
 
-function App() {
-  const onClick = () => {
-    import('./notify')
-    .then(res => res.default())
-  };
+const AvatarComponent = lazy(() => import('./AvatarComponent'));
+
+class App extends Component {
+  constructor(props) {
+    super(props);
+
+    this.state = {
+      details: false
+    }
+  }
   
-  return (
-    <div>
-      <p onClick={onClick}>Hello World</p>
-      <MyComponent />
-    </div>
-  );
+  showDetails() {
+    this.setState({ details: true });
+  }
+  
+  renderLoader = () => <div className="loader"></div>;
+  
+  render() {
+    const { details } = this.state;
+
+    return (
+      <div className="App">
+        { !details && <button onClick={() => this.showDetails()}>CLICK ME</button> }
+        { details &&   
+          <Suspense fallback={this.renderLoader()}>
+            <AvatarComponent />
+          </Suspense> 
+        }
+      </div>
+    );
+  }
 }
 
 export default App;
